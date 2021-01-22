@@ -1,0 +1,43 @@
+#项目配置文件 中划线 - 的key无法读取
+system:
+  name: 'wms'
+  env: 'develop'
+  addr: ':8080'
+  dbType: 'mysql'
+  ossType: 'local'
+  useMultipoint: true
+
+local:
+  path: 'upload/file'
+
+jwt:
+  signingKey: 'rwertt34fdfqwert'
+  expiresTime: 86400
+
+mysql:
+  path: '127.0.0.1:3306'
+  config: 'charset=utf8&parseTime=True&loc=Local'
+  dbName: '7youo'
+  username: 'root'
+  password: '1234Qwer'
+  maxIdleConns: 10
+  maxOpenConns: 100
+  logMode: false
+  logZap: ""
+
+redis:
+  db: 0
+  addr: '127.0.0.1:6379'
+  password: ''
+
+zap:
+  level: 'info'
+  format: 'console'
+  prefix: '[wms]'
+  director: 'log'
+  linkName: 'latest_log'
+  showLine: false
+  encodeLevel: 'LowercaseColorLevelEncoder'
+  stacktraceKey: 'stacktrace'
+  logInConsole: false
+

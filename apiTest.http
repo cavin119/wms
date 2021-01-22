@@ -1,0 +1,76 @@
+POST {{host}}/api/v1/register
+Content-Type: application/json
+
+{
+  "username": "tom999",
+  "password": "qwe123456",
+  "re_password": "qwe123456"
+}
+
+###
+POST {{host}}/api/v1/login
+Content-Type: application/json
+
+{
+  "username": "tom999",
+  "password": "qwe123456"
+}
+
+###
+GET {{host}}/api/v1/user/info
+Accept: application/json
+x-token: {{token}}
+
+###
+POST {{host}}/api/v1/role/create
+Content-Type: application/json
+x-token: {{token}}
+
+{
+  "p_id": 777,
+  "role_name": "财务组长"
+}
+
+###
+
+POST {{host}}/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposi tion: form-data; name="file"; filename="2020-12-16 16.07.58.jpg"
+
+< /Users/cavin/Documents/2020-12-16 16.07.58.jpg
+--WebAppBoundary--
+
+###
+POST {{host}}/sendMsg
+Content-Type: application/x-www-form-urlencoded
+
+nickname=Cavin&msg=土豪我们交朋友吧
+
+###
+POST {{host}}/sendMap?ids[a]=1234&ids[b]=hello
+Content-Type: application/x-www-form-urlencoded
+
+names[first]=thinkerou&names[second]=tianou
+
+###
+POST {{host}}/sendJson
+Content-Type: application/json
+
+{
+  "nickname": "李白VS青莲剑仙",
+  "msg": "土豪我们做朋友吧"
+}
+
+###
+GET {{host}}
+Accept: application/json
+
+###
+POST {{host}}/sendMsg
+Content-Type: application/x-www-form-urlencoded
+
+nickname=Cavin&msg=土豪我们交朋友吧
+
+###
