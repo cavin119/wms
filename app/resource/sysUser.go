@@ -61,7 +61,7 @@ func Register(c *gin.Context) {
 	}
 	//判断用户名是否被注册
 	if server.UsernameExist(request.Username) {
-		response.FailWithValidate(gin.H{"username": "用户名已注册"}, c)
+		response.FailWithConflict(gin.H{"username": "用户名已注册"}, c)
 		return
 	}
 	//调用注册服务
