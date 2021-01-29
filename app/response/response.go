@@ -86,3 +86,11 @@ func FailWithConflict(errs interface{}, c *gin.Context)  {
 		"请求资源冲突",
 	})
 }
+//操作的资源不存在
+func FailWithNotFound(msg string, c *gin.Context)  {
+	Result(NOT_FOUND, nil, msg, c)
+}
+//操作的资源不存在
+func FailWithBadRequest(msg string, c *gin.Context)  {
+	Result(BAD_REQUEST, nil, msg, c)
+}

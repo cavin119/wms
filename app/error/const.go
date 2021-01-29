@@ -2,7 +2,7 @@ package error
 
 const (
 	//通用错误码
-	FORBID_DATA = 9901 //禁用的数据
+	//FORBID_DATA = 9901 //禁用的数据
 	ERROR   = 9999 //未知错误
 	//start jwt
 	TOKEN_REQUIRED = 1001 //token不能为空

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
+	"strconv"
 )
 
 //创建角色
@@ -36,4 +37,31 @@ func CreateRole(c *gin.Context) {
 		return
 	}
 	response.OkWithDetailed(role, "创建角色成功", c)
+}
+
+func DeleteRole(c *gin.Context) {
+	request := c.Param("id")
+
+	roleId, err := strconv.Atoi(request)
+	if err != nil {
+		response.FailWithValidate(map[string]string{
+			"id": "角色ID格式错误",
+		}, c)
+		return
+	}
+	ok, dErr := server.DeleteRole(roleId)
+	if !ok {
+		if errors.Is(dErr, server.RoleNotFound) {
+			//删除资源不存在
+			response.FailWithNotFound(dErr.Error(), c)
+		} else if errors.Is(dErr, server.HaveChildRolesCannotDelete) {
+			//有子角色
+			response.FailWithBadRequest(dErr.Error(), c)
+		} else {
+			//数据删除失败未知错误
+			response.FailWithMsg(dErr.Error(), c)
+		}
+		return
+	}
+	response.OkWithMsg("角色删除成功", c)
 }

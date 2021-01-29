@@ -12,7 +12,7 @@ POST {{host}}/api/v1/login
 Content-Type: application/json
 
 {
-  "username": "1",
+  "username": "tom888",
   "password": "qwe123456"
 }
 
@@ -27,9 +27,14 @@ Content-Type: application/json
 x-token: {{token}}
 
 {
-  "p_id": 777,
+  "p_id": 1,
   "role_name": "财务组长"
 }
+
+###
+DELETE {{host}}/api/v1/role/2
+Content-Type: application/json
+x-token: {{token}}
 
 ###
 

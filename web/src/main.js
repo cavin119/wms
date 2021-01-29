@@ -1,0 +1,10 @@
+import { createApp } from 'vue'
+import App from './App.vue'
+
+import ElementUI from 'element-plus'
+import 'element-plus/lib/theme-chalk/index.css'
+// ElementUI.Dialog.props.closeOnClickModal.default = false
+
+import router from './router/index'
+
+createApp(App).use(ElementUI).use(router).mount('#app')
