@@ -22,13 +22,13 @@ export const user = {
             sessionStorage.clear()
         }
     },
-    action: {
+    actions: {
         async LoginAction({ commit }, loginInfo) {
-            const res = await loginServer()
+            const res = await loginServer(loginInfo)
             console.log(res)
             console.log(loginInfo)
             alert('login action')
-            commit('setToken', 'token123456')
+            commit('setToken', '34535345345')
             return true
         },
         async LogoutAction({ commit }) {

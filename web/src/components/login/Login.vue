@@ -24,6 +24,7 @@
           </el-form-item>
           <el-form-item prop="password">
             <el-input
+                type="password"
                 placeholder="请输入密码"
                 v-model="loginForm.password"
             >
@@ -57,6 +58,7 @@ import { mapActions } from 'vuex'
 
 export default {
   name: "Login",
+  lock: "lock",
   data() {
     return {
       loginForm : {
