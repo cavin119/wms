@@ -4,7 +4,7 @@ export const user = {
     namespaced: true,
     state: {
         userInfo: {
-            username: 'Tom',
+            username: '',
             roleId: 0
         },
         token: ''
@@ -25,11 +25,14 @@ export const user = {
     actions: {
         async LoginAction({ commit }, loginInfo) {
             const res = await loginServer(loginInfo)
-            console.log(res)
-            console.log(loginInfo)
-            alert('login action')
-            commit('setToken', '34535345345')
-            return true
+            if (res.code == 200) {
+                commit('setToken', res.data.token)
+                commit('setUserInfo', {
+                    username: res.data.username,
+                    roleId: 0
+                })
+                return true
+            }
         },
         async LogoutAction({ commit }) {
             alert('Logout action')

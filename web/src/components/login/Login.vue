@@ -94,7 +94,6 @@ export default {
         } else {
           const  flag = await this.login()
           console.log(flag)
-          alert("submit")
         }
       })
     }

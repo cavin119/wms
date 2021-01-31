@@ -1,5 +1,9 @@
+import service from '@/utils/request'
 
 export const loginServer = (data) => {
-    alert("login server")
-    return data
+    return service({
+        url: "/v1/login",
+        method: 'post',
+        data: data
+    })
 }
