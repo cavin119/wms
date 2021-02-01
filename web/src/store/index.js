@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 
 import { user } from "@/store/module/user"
+import { router } from "@/store/module/router"
 Vue.use(Vuex)
 
 const vuexLocal = new VuexPersistence({
@@ -12,7 +13,8 @@ const vuexLocal = new VuexPersistence({
 
 export const store = new Vuex.Store({
     modules: {
-        user
+        user,
+        router
     },
     plugins: [vuexLocal.plugin]
 })

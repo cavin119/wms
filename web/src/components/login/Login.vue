@@ -20,18 +20,11 @@
         >
           <el-form-item prop="username">
             <el-input placeholder="请输入用户名" v-model="loginForm.username">
-              <i class="el-input__icon el-icon-user" /></el-input>
+              <i class="el-input__icon el-icon-user" slot="suffix"></i></el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input
-                type="password"
-                placeholder="请输入密码"
-                v-model="loginForm.password"
-            >
-              <i
-                  :class="'el-input__icon el-icon-lock'"
-              />
-            </el-input>
+            <el-input type="password" placeholder="请输入密码" v-model="loginForm.password">
+              <i class="el-input__icon el-icon-lock" slot="suffix"></i></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="submitForm" style="width: 100%"
@@ -62,8 +55,8 @@ export default {
   data() {
     return {
       loginForm : {
-        username: '',
-        password: ''
+        username: 'tom888',
+        password: 'qwe123456'
       },
       rules: {
         username: [

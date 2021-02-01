@@ -1,4 +1,5 @@
 import { loginServer } from '@/api/user'
+import router from '@/router/index'
 
 export const user = {
     namespaced: true,
@@ -23,7 +24,7 @@ export const user = {
         }
     },
     actions: {
-        async LoginAction({ commit }, loginInfo) {
+        async LoginAction({ commit, dispatch, rootState, getters }, loginInfo) {
             const res = await loginServer(loginInfo)
             if (res.code == 200) {
                 commit('setToken', res.data.token)
@@ -31,6 +32,12 @@ export const user = {
                     username: res.data.username,
                     roleId: 0
                 })
+                console.log(getters["userInfo"])
+                await dispatch('router/SetAsyncRouter', {}, { root: true })
+                const asyncRouters = rootState.router.asyncRouters
+                console.log(asyncRouters)
+                router.addRoutes(asyncRouters)
+                router.push({ name: 'dashboard' })
                 return true
             }
         },

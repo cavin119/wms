@@ -9,6 +9,8 @@ import router from '@/router/index'
 // time line css
 import '../node_modules/timeline-vuejs/dist/timeline-vuejs.css'
 
+import '@/permission'
+
 import { store } from '@/store/index'
 Vue.config.productionTip = false
 
