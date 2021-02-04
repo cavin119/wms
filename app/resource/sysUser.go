@@ -37,7 +37,7 @@ func getToken(user *model.SysUser, c *gin.Context) {
 	claims := j.Claims(username)
 	tokenString, err := j.CreateToken(claims)
 	if err != nil {
-		response.FailWithCodeAndMsg(appError.TOEKN_GET_FAIL, "授权失败，请检查系统配置", c)
+		response.FailWithDetailed(appError.TOEKN_GET_FAIL, gin.H{"reload": true}, "授权失败，请检查系统配置", c)
 		return
 	}
 	j.SetRedisJWT(username, tokenString)
@@ -78,11 +78,8 @@ func Register(c *gin.Context) {
 }
 //获取用户信息
 func UserInfo(c *gin.Context) {
-	//获取jwt 传入的的username值
-	username, _ := c.Get("username")
-	var usernameStr string = username.(string)
-
-	info, err := server.GetUserInfo(usernameStr)
+	username := middlewares.GetLoginUsername(c)
+	info, err := server.GetUserInfo(username)
 	if err != nil {
 		response.FailWithCodeAndMsg(response.NOT_FOUND, "用户不存在", c)
 		return

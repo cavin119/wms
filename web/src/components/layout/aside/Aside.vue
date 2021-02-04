@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import AsideComponent from "./asideComponent/AsideComponent";
 
 export default {
@@ -37,6 +37,7 @@ export default {
     AsideComponent
   },
   methods: {
+    ...mapMutations("history", ["addHistory"]),
     selectMenuItem(index, _, ele) {
       const query = {};
       const params = {};
@@ -58,10 +59,41 @@ export default {
   },
   computed: {
     ...mapGetters("router", ["asyncRouters"])
+  },
+  created() {
+    this.active = this.$route.name;
+    let screenWidth = document.body.clientWidth;
+    if (screenWidth < 1000) {
+      this.isCollapse = !this.isCollapse;
+    }
+
+    this.$bus.on("collapse", item => {
+      this.isCollapse = item;
+    });
+  },
+  watch: {
+    $route() {
+      this.active = this.$route.name;
+    }
+  },
+  beforeDestroy() {
+    this.$bus.off("collapse");
   }
 }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+.el-scrollbar {
+  .el-scrollbar__view {
+    height: 100%;
+  }
+}
+.menu-info {
+  .menu-contorl {
+    line-height: 52px;
+    font-size: 20px;
+    display: table-cell;
+    vertical-align: middle;
+  }
+}
 </style>

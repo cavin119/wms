@@ -32,7 +32,7 @@ x-token: {{token}}
 }
 
 ###
-DELETE {{host}}/api/v1/role/2
+DELETE {{host}}/api/v1/role/6
 Content-Type: application/json
 x-token: {{token}}
 

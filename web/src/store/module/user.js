@@ -21,6 +21,7 @@ export const user = {
             state.userInfo = {}
             state.token = ''
             sessionStorage.clear()
+            router.push({ name: 'home', replace: true })
         }
     },
     actions: {

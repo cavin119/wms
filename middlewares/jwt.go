@@ -18,12 +18,12 @@ func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("x-token")
 		if token == "" {
-			response.FailWithCodeAndMsg(appError.TOKEN_REQUIRED, "未登录或非法访问", c)
+			response.FailWithDetailed(appError.TOKEN_REQUIRED, gin.H{"reload": true}, "未登录或非法访问", c)
 			c.Abort()
 			return
 		}
 		if IsBlacklist(token) {
-			response.FailWithCodeAndMsg(appError.TOKEN_BLACKLIST, "您的帐户异地登陆或令牌失效", c)
+			response.FailWithDetailed(appError.TOKEN_BLACKLIST, gin.H{"reload": true}, "您的帐户异地登陆或令牌失效", c)
 			c.Abort()
 			return
 		}
@@ -31,20 +31,20 @@ func JWTAuth() gin.HandlerFunc {
 		claims, err := j.ParseToken(token)
 		if err != nil {
 			if err == TokenExpired {
-				response.FailWithCodeAndMsg(appError.TOKEN_EXPIRED, "授权已过期", c)
+				response.FailWithDetailed(appError.TOKEN_EXPIRED, gin.H{"reload": true}, "授权已过期", c)
 				c.Abort()
 				return
 			}
-			response.FailWithCodeAndMsg(appError.TOKEN_INVALID, "令牌不合法", c)
+			response.FailWithDetailed(appError.TOKEN_INVALID, gin.H{"reload": true}, "令牌不合法", c)
 			c.Abort()
 			return
 		}
 		if (claims.Exp - time.Now().Unix()) < 0 {
-			response.FailWithCodeAndMsg(appError.TOKEN_EXPIRED, "授权已过期", c)
+			response.FailWithDetailed(appError.TOKEN_EXPIRED, gin.H{"reload": true}, "授权已过期", c)
 			c.Abort()
 			return
 		} else if token != j.GetRedisJWT(claims.Username) {
-			response.FailWithCodeAndMsg(appError.TOKEN_REPACED, "账号在别的设备已登录", c)
+			response.FailWithDetailed(appError.TOKEN_REPACED, gin.H{"reload": true}, "账号在别的设备已登录", c)
 			c.Abort()
 			return
 		}
@@ -52,6 +52,13 @@ func JWTAuth() gin.HandlerFunc {
 		c.Set("tokenExp", claims.Exp)
 		c.Next()
 	}
+}
+
+//获取登录的用户名
+func GetLoginUsername(c *gin.Context) string {
+	username, _ := c.Get("username")
+	var usernameStr string = username.(string)
+	return usernameStr
 }
 
 type JWT struct {

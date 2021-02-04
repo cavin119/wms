@@ -6,16 +6,19 @@ import (
 	"7youo-wms/global"
 	"7youo-wms/utils"
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
+)
+
+var (
+	UserNotFound = errors.New("用户不存在")
+	PasswordError = errors.New("密码错误")
 )
 
 //判断用户名是否存在
 func UsernameExist(username string) bool {
-	//@todo 如果redis 有缓存用户信息，可以优先查询redis
-	var model model.SysUser
-	//没找到
-	if errors.Is(global.G_DB.Select("id").Where("username = ?", username).First(&model).Error, gorm.ErrRecordNotFound) {
+	_, err := GetUserInfo(username)
+	if err != nil {
+		//没找到用户
 		return false
 	}
 	return true
@@ -31,15 +34,16 @@ func Register(user *request.Register) (regUser *model.SysUser, err error)  {
 
 //用户登录
 func Login(u request.Login) (loginUser *model.SysUser, err error)  {
-	var user model.SysUser
-	err = global.G_DB.Where("username = ?", u.Username).First(&user).Error
-	if err == gorm.ErrRecordNotFound {
-		return nil, errors.New("user_not_found")
+	//var user model.SysUser
+	user, err := GetUserInfo(u.Username)
+	//err = global.G_DB.Where("username = ?", u.Username).First(&user).Error
+	if err != nil {
+		return nil, err
 	}
 	if user.Password != utils.MD5([]byte(u.Password)) {
-		return nil, errors.New("password_error")
+		return nil, PasswordError
 	}
-	return &user, nil
+	return user, nil
 }
 
 //获取用户信息
@@ -47,9 +51,7 @@ func GetUserInfo(username string) (user *model.SysUser, err error) {
 	var model model.SysUser
 	err = global.G_DB.Where("username = ?", username).First(&model).Error
 	if err == gorm.ErrRecordNotFound {
-		return nil, errors.New("not_found")
+		return nil, UserNotFound
 	}
-	fmt.Printf("get user info err %v", err)
-	fmt.Printf("get user info %v", user)
 	return &model, nil
 }

@@ -1,4 +1,5 @@
 import { asyncRouterHandle } from '@/utils/asyncRouter';
+import { getMenusServer } from '@/api/menu'
 
 const routerList = []
 
@@ -38,6 +39,8 @@ export const router = {
                 },
                 children: []
             }]
+            const getRouterResponse = await getMenusServer()
+            console.log(getRouterResponse)
             const asyncRouter = [
                 {
                     path: "404",
@@ -55,9 +58,45 @@ export const router = {
                     sort: 1,
                     meta: {
                         title: '仪表盘',
-                        icon: 'setting'
+                        icon: 's-home'
                     },
                     component: 'components/dashboard/Dashboard.vue'
+                },
+                {
+                    path: 'system',
+                    name: 'system',
+                    hidden: false,
+                    sort: 2,
+                    meta: {
+                        title: '超级管理员',
+                        icon: 'user-solid'
+                    },
+                    component: 'components/system/System.vue',
+                    children: [
+                        {
+                            path: 'roles',
+                            name: 'roles',
+                            hidden: false,
+                            sort: 1,
+                            meta: {
+                                title: '角色管理',
+                                icon: 'coordinate'
+                            },
+                            component: 'components/system/roles/Roles.vue'
+                        },
+                        {
+                            path: 'admin',
+                            name: 'admin',
+                            hidden: false,
+                            sort: 2,
+                            meta: {
+                                title: '管理员',
+                                icon: 's-custom'
+                            },
+                            component: 'components/system/admin/Admin.vue'
+                        }
+
+                    ]
                 }
             ];
             formatRouter(asyncRouter)

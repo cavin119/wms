@@ -14,6 +14,9 @@ func BaseRouter(router *gin.RouterGroup) (r gin.IRouter) {
 
 		//角色
 		BaseRouter.DELETE("/role/:id", resource.DeleteRole)
+
+		//用户权限菜单
+		BaseRouter.GET("/menus", resource.GetMenus)
 	}
 	return BaseRouter
 }
