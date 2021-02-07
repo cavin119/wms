@@ -36,8 +36,8 @@ service.interceptors.request.use(
             showLoading()
         }
         const token = store.getters['user/token']
-        const user = store.getters['user/userInfo']
-        console.log(user)
+        // const user = store.getters['user/userInfo']
+        // console.log(user)
         config.data = JSON.stringify(config.data);
         config.headers = {
             'Content-Type': 'application/json',

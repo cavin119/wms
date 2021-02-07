@@ -38,6 +38,12 @@ x-token: {{token}}
 
 ###
 
+GET {{host}}/api/v1/menus
+Content-Type: application/json
+x-token: {{token}}
+
+###
+
 POST {{host}}/upload
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 

@@ -2,8 +2,8 @@ package model
 
 type SysMenu struct {
 	WMSModel
-	ParentId  string `json:"parent_id" gorm:"comment:父级菜单id"`
-	Path      string `json:"Path" gorm:"comment:路由path"`
+	ParentId  int `json:"parent_id" gorm:"comment:父级菜单id"`
+	Path      string `json:"path" gorm:"comment:路由path"`
 	Name      string `json:"name" gorm:"comment:路由name"`
 	IsHidden  bool   `json:"is_hidden" gorm:"comment:是否隐藏"`
 	Component string `json:"component" gorm:"comment:前端组件路径"`
