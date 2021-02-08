@@ -18,6 +18,8 @@ func BaseRouter(router *gin.RouterGroup) (r gin.IRouter) {
 		//用户权限菜单
 		BaseRouter.GET("/menus", resource.GetMenus)
 		BaseRouter.POST("/menus", resource.CreateMenu)
+		BaseRouter.GET("/menus/:id", resource.GetMenuById)
+		BaseRouter.DELETE("/menus/:id", resource.DelMenuById)
 	}
 	return BaseRouter
 }

@@ -2,9 +2,68 @@ package server
 
 import (
 	"7youo-wms/app/model"
+	"7youo-wms/app/request"
 	"7youo-wms/global"
+	"errors"
 	"fmt"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
+
+var (
+	MenuNotFound = errors.New("菜单不存在或者已删除")
+	HaveChildMenusCannotDelete = errors.New("存在下级菜单不能删除")
+)
+
+func CreateMenu(request *request.CreateMenu) (*model.SysMenu, error){
+	var menu model.SysMenu
+	menu.ParentId = request.ParentId
+	menu.Name = request.Name
+	menu.Path = request.Path
+	menu.Component = request.Component
+	menu.IsHidden = *request.IsHidden
+	menu.Sort = request.Sort
+	menu.Meta.Title = request.Meta.Title
+	menu.Meta.Icon = request.Meta.Icon
+
+	err := global.G_DB.Create(&menu).Error
+	return &menu, err
+
+}
+
+//通过id获取角色详情
+//@param roleId int
+//@return nil
+//@return SysRole
+func GetMenuById(menuId int) (menu *model.SysMenu, err error)  {
+	var model model.SysMenu
+	rows := global.G_DB.Where("id = ?", menuId).Find(&model).RowsAffected
+	if rows == 0 {
+		return nil, MenuNotFound
+	}
+	return &model, nil
+}
+
+//删除角色
+func DeleteMenu(menuId int) (bool, error) {
+	menu, err := GetMenuById(menuId)
+	//找不到记录
+	if err != nil {
+		return false, MenuNotFound
+	}
+	//存在子角色
+	if !errors.Is(global.G_DB.Where("parent_id = ?", menuId).First(&model.SysMenu{}).Error, gorm.ErrRecordNotFound) {
+		return false, HaveChildMenusCannotDelete
+	}
+
+	delErr := global.G_DB.Delete(menu).Error
+	//数据操作时出现错误
+	if delErr != nil {
+		global.G_LOG.Error("DeleteMenu error", zap.Any("err", delErr.Error()))
+		return false, err
+	}
+	return true, nil
+}
 
 func GetMenuTree() (err error, menus []model.SysMenu) {
 	err, treeMap := getAllMenus()
@@ -31,7 +90,6 @@ func getAllMenus() (err error, treeMap map[int][]model.SysMenu)  {
 	for _, v := range allMenus {
 		treeMap[v.ParentId] = append(treeMap[v.ParentId], v)
 	}
-	fmt.Printf("getAllMenus： %v", treeMap)
 	return err, treeMap
 }
 

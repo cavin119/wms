@@ -8,9 +8,9 @@
       <el-table-column label="id" min-width="100" prop="id"></el-table-column>
       <el-table-column label="路由Name" min-width="160" prop="name"></el-table-column>
       <el-table-column label="路由Path" min-width="160" prop="path"></el-table-column>
-      <el-table-column label="是否隐藏" min-width="100" prop="hidden">
+      <el-table-column label="是否隐藏" min-width="100" prop="is_hidden">
         <template slot-scope="scope">
-          <span>{{scope.row.hidden?"隐藏":"显示"}}</span>
+          <span>{{scope.row.is_hidden?"隐藏":"显示"}}</span>
         </template>
       </el-table-column>
       <el-table-column label="父节点" min-width="90" prop="parent_id"></el-table-column>
@@ -93,7 +93,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="排序" prop="sort" style="width:30%">
-          <el-input-number v-model.number="form.sort"></el-input-number>
+          <el-input-number v-model.number="form.sort" :min="1" :max="9999"></el-input-number>
         </el-form-item>
 
         <el-form-item label="图标" prop="meta.icon" style="width:30%">
@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import { getMenusServer, createMenusServer } from '@/api/menu'
+import { getMenusServer, createMenusServer, getMenuByIdServer, delMenuByIdServer } from '@/api/menu'
 import pageData from '@/utils/pageData'
 import Icon from './Icon'
 
@@ -131,16 +131,18 @@ export default {
       checkFlag: false,
       menuOption: [
         {
-          id: 0,
+          id: "0",
           title: "根菜单"
         }
       ],
       form: {
+        id: "0",
         path: "",
         name: "",
-        is_hidden: "",
-        parent_id: 0,
+        is_hidden: false,
+        parent_id: "0",
         component: "",
+        sort: 1,
         meta: {
           title: "",
           icon: "",
@@ -176,25 +178,76 @@ export default {
     setOptions() {
       this.menuOption = [
         {
-          id: 0,
+          id: "0",
           title: "根目录"
         }
       ];
-      // this.setMenuOptions(this.tableData, this.menuOption, false);
+      this.setMenuOptions(this.tableData, this.menuOption, false);
+    },
+    setMenuOptions(menuData, optionsData, disabled) {
+      menuData &&
+      menuData.map(item => {
+        if (item.children && item.children.length) {
+          const option = {
+            title: item.meta.title,
+            id: String(item.id),
+            disabled: disabled || item.id == this.form.id,
+            children: []
+          };
+          this.setMenuOptions(
+              item.children,
+              option.children,
+              disabled || item.id == this.form.id
+          );
+          optionsData.push(option);
+        } else {
+          const option = {
+            title: item.meta.title,
+            id: String(item.id),
+            disabled: disabled || item.id == this.form.id
+          };
+          optionsData.push(option);
+        }
+      });
     },
     addMenu(id) {
       this.dialogTitle = "新增菜单";
-      this.form.parentId = parseInt(id);
+      this.form.parent_id = String(id);
       this.isEdit = false;
       this.setOptions();
       this.dialogFormVisible = true
       console.log(id)
     },
-    editMenu(id) {
-      console.log(id)
+    async editMenu(id) {
+      this.dialogTitle = "编辑菜单";
+      const res = await getMenuByIdServer(id);
+      console.log(res)
+      this.form = res.data;
+      this.form.parent_id = String(this.form.parent_id)
+      this.isEdit = true;
+      this.setOptions();
+      this.dialogFormVisible = true;
     },
-    deleteMenu(id) {
-      console.log(id)
+    async deleteMenu(id) {
+      this.$confirm("此操作将永久删除所有角色下的该菜单", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(async () => {
+        const res = await delMenuByIdServer(id)
+        if (res.code == 200) {
+          this.$message({
+            type: "success",
+            message: res.msg
+          });
+          this.getTableData()
+        }
+      }).catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
+      })
     },
     closeDialog() {
       this.dialogFormVisible = false
@@ -203,6 +256,7 @@ export default {
     enterDialog() {
       this.$refs.menuForm.validate(async valid => {
         if (valid) {
+          this.form.parent_id = parseInt(this.form.parent_id)
           const res = await createMenusServer(this.form)
           if (res.code == 200) {
             this.$message({
@@ -220,11 +274,13 @@ export default {
       this.checkFlag = false
       this.$refs.menuForm.resetFields()
       this.form = {
+        id: "0",
         path: "",
         name: "",
-        is_hidden: "",
-        parent_id: 0,
+        is_hidden: false,
+        parent_id: "0",
         component: "",
+        sort: 1,
         meta: {
           title: "",
           icon: "",

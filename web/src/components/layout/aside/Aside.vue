@@ -13,7 +13,7 @@
             unique-opened
         >
           <template v-for="item in asyncRouters[0].children">
-            <aside-component :key="item.name" :routerInfo="item" v-if="!item.hidden" />
+            <aside-component :key="item.name" :routerInfo="item" v-if="!item.is_hidden" />
           </template>
         </el-menu>
       </transition>

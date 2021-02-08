@@ -5,7 +5,7 @@ const routerList = []
 
 const formatRouter = (routers) => {
     routers && routers.map(item => {
-        if ((!item.children || item.children.every(ch => ch.hidden)) && item.name != '404') {
+        if ((!item.children || item.children.every(ch => ch.is_hidden)) && item.name != '404') {
             routerList.push({ label: item.meta.title, value: item.name })
         }
         if (item.children && item.children.length > 0) {

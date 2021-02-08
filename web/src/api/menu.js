@@ -16,3 +16,19 @@ export const createMenusServer = (data) => {
         data: data
     })
 }
+
+//获取单个菜单
+export const getMenuByIdServer = (id) => {
+    return service({
+        url: "/v1/menus/" + id,
+        method: 'get'
+    })
+}
+
+//删除单个菜单
+export const delMenuByIdServer = (id) => {
+    return service({
+        url: "/v1/menus/" + id,
+        method: 'delete'
+    })
+}
