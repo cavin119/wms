@@ -37,14 +37,15 @@ func getCnValidation() (*validator.Validate, ut.Translator) {
 
 //@param data 请求数据
 //@return []interface{}, bool,验证成功 bool = true, 验证失败bool = false,并返回验证失败信息
-func RequestValidate(data interface{}) ([]interface{}, bool) {
+func RequestValidate(data interface{}) (map[string]string, bool) {
 	validate, trans := getCnValidation()
 	//验证数据
 	err := validate.Struct(data)
 	if err != nil {
 		//错误array
 		errs := err.(validator.ValidationErrors)
-		errsMap := make([]interface{}, 0)//用于格式化post参数错误，key=>error
+		//用于格式化post参数错误，key=>error
+		errsMap :=  map[string]string{}
 		//格式化错误信息输出
 		for _, validationErr := range errs {
 			//request错误字段
@@ -59,9 +60,10 @@ func RequestValidate(data interface{}) ([]interface{}, bool) {
 			}
 			//把字段错误信息加到map里面
 			//大写转成下划线，统一输出标准
-			errsMap = append(errsMap, map[string]string{
-				utils.UnderScoreName(filed): msg,
-			})
+			errsMap[utils.UnderScoreName(filed)] = msg
+			//errsMap = append(errsMap, map[string]string{
+			//	utils.UnderScoreName(filed): msg,
+			//})
 		}
 		return errsMap, false
 	}

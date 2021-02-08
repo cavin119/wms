@@ -50,27 +50,144 @@
         </template>
       </el-table-column>
     </el-table>
+
+<!--    弹窗-->
+    <el-dialog :before-close="handleClose" :title="dialogTitle" :visible.sync="dialogFormVisible">
+      <el-form
+          :inline="true"
+          :model="form"
+          :rules="rules"
+          label-position="top"
+          label-width="85px"
+          ref="menuForm"
+      >
+        <el-form-item label="菜单名称（中文）" prop="meta.title" style="width:30%">
+          <el-input autocomplete="off" v-model="form.meta.title"></el-input>
+        </el-form-item>
+        <el-form-item label="路由name(path)" prop="name" style="width:30%">
+          <el-input
+              @change="changeName"
+              autocomplete="off"
+              placeholder="唯一英文字符串"
+              v-model="form.name"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="文件路径" prop="component" style="width:30%">
+          <el-input autocomplete="off" v-model="form.component"></el-input>
+        </el-form-item>
+
+        <el-form-item label="父节点Id" prop="parent_id" style="width:30%">
+          <el-cascader
+              :disabled="!this.isEdit"
+              :options="menuOption"
+              :props="{ checkStrictly: true,label:'title',value:'id',disabled:'disabled',emitPath:false}"
+              :show-all-levels="false"
+              filterable
+              v-model="form.parent_id"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="是否隐藏" prop="is_hidden" style="width:30%">
+          <el-select placeholder="是否在列表隐藏" v-model="form.is_hidden">
+            <el-option :value="false" label="否"></el-option>
+            <el-option :value="true" label="是"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序" prop="sort" style="width:30%">
+          <el-input-number v-model.number="form.sort"></el-input-number>
+        </el-form-item>
+
+        <el-form-item label="图标" prop="meta.icon" style="width:30%">
+          <Icon :meta="form.meta">
+            <template slot="prepend">el-icon-</template>
+          </Icon>
+        </el-form-item>
+      </el-form>
+
+      <div class="dialog-footer" slot="footer">
+        <el-button @click="closeDialog">取 消</el-button>
+        <el-button @click="enterDialog" type="primary">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getMenusServer } from '@/api/menu'
+import { getMenusServer, createMenusServer } from '@/api/menu'
+import pageData from '@/utils/pageData'
+import Icon from './Icon'
+
 export default {
   name: "Menus",
+  mixins: [pageData],
+  components: {
+    Icon
+  },
   data () {
     return {
-      tableData: []
+      listApi: getMenusServer,//数据接口
+      dialogTitle: '新增菜单',
+      dialogFormVisible: false,
+      isEdit: false,
+      checkFlag: false,
+      menuOption: [
+        {
+          id: 0,
+          title: "根菜单"
+        }
+      ],
+      form: {
+        path: "",
+        name: "",
+        is_hidden: "",
+        parent_id: 0,
+        component: "",
+        meta: {
+          title: "",
+          icon: "",
+        },
+      },
+      rules: {
+        name: [{ required: true, message: "请输入菜单name(path)", trigger: "blur" }],
+        component: [{ required: true, message: "请输入vue组件路径", trigger: "blur" }],
+        is_hidden: [{ required: true, message: "请选择是否隐藏菜单", trigger: "change" }],
+        sort: [{ required: true, message: "请设置排序", trigger: "change" }],
+        "meta.title": [
+          { required: true, message: "请输入菜单中文名称", trigger: "blur" }
+        ],
+        "meta.icon": [
+          { required: true, message: "请输入菜单图标", trigger: "change" }
+        ],
+
+      }
     }
   },
   created() {
-    this.getMenuList()
+    this.pageSize = 999;
+    this.getTableData();
   },
   methods: {
-    async getMenuList() {
-      const res = await getMenusServer()
-      this.tableData = res.data
+    handleClose(done) {
+      done()
+    },
+    changeName () {
+      //规则：vue的name和path需要一样
+      this.form.path = this.form.name
+    },
+    setOptions() {
+      this.menuOption = [
+        {
+          id: 0,
+          title: "根目录"
+        }
+      ];
+      // this.setMenuOptions(this.tableData, this.menuOption, false);
     },
     addMenu(id) {
+      this.dialogTitle = "新增菜单";
+      this.form.parentId = parseInt(id);
+      this.isEdit = false;
+      this.setOptions();
+      this.dialogFormVisible = true
       console.log(id)
     },
     editMenu(id) {
@@ -78,7 +195,44 @@ export default {
     },
     deleteMenu(id) {
       console.log(id)
-    }
+    },
+    closeDialog() {
+      this.dialogFormVisible = false
+      this.resetForm()
+    },
+    enterDialog() {
+      this.$refs.menuForm.validate(async valid => {
+        if (valid) {
+          const res = await createMenusServer(this.form)
+          if (res.code == 200) {
+            this.$message({
+              type: "success",
+              message: this.isEdit ? "编辑成功" : "添加成功!"
+            });
+            this.getTableData();
+          }
+          this.resetForm();
+          this.dialogFormVisible = false;
+        }
+      })
+    },
+    resetForm () {
+      this.checkFlag = false
+      this.$refs.menuForm.resetFields()
+      this.form = {
+        path: "",
+        name: "",
+        is_hidden: "",
+        parent_id: 0,
+        component: "",
+        meta: {
+          title: "",
+          icon: "",
+        },
+      };
+
+
+    },
   }
 }
 </script>

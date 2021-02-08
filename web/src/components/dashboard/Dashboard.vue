@@ -85,19 +85,19 @@ export default {
         {
           label: "用户管理",
           icon: "el-icon el-icon-monitor",
-          name: "user",
+          name: "admin",
           color: "#ff9c6e",
         },
         {
           label: "角色管理",
           icon: "el-icon el-icon-setting",
-          name: "authority",
+          name: "roles",
           color: "#69c0ff",
         },
         {
           label: "菜单管理",
           icon: "el-icon el-icon-menu",
-          name: "menu",
+          name: "menus",
           color: "#b37feb",
         },
       ]
